@@ -14,49 +14,75 @@ form::form(QWidget *parent) :
 	timer->setInterval(timerInterval); // Задаем интервал таймера
 	connect(timer, SIGNAL(timeout()), this, SLOT(updateGraph())); // Подключаем сигнал таймера к нашему слоту
 
-	series = new QLineSeries();
-	planet1 = new QScatterSeries();
-	planet2 = new QScatterSeries();
+    seriesYX = new QLineSeries();
+    seriesZXY = new QLineSeries();
+    coreXY = new QScatterSeries();
+    coreZXY = new QScatterSeries();
+    coreXY->setMarkerSize(10);
+    coreZXY->setMarkerSize(10);
 
-	chart = new QChart();
-	chart->addSeries(series);
-	chart->addSeries(planet1);
-	chart->addSeries(planet2);
-	chart->createDefaultAxes();
-	auto xAxis = chart->axes(Qt::Horizontal);
-	auto yAxis = chart->axes(Qt::Vertical);
-	xAxis[0]->setRange(-250, 250);
-	yAxis[0]->setRange(-250, 250);
-	chart->legend()->hide();
+    chart1 = new QChart();
+    chart1->addSeries(seriesYX);
+    chart1->addSeries(coreXY);
+    chart1->createDefaultAxes();
+    auto xAxis = chart1->axes(Qt::Horizontal);
+    auto yAxis = chart1->axes(Qt::Vertical);
+    xAxis[0]->setRange(-250, 250);
+    yAxis[0]->setRange(-250, 250);
+    chart1->legend()->hide();
 
-	ui->graphicsView->setChart(chart);
+    chart2 = new QChart();
+    chart2->addSeries(seriesZXY);
+    chart2->addSeries(coreZXY);
+    chart2->createDefaultAxes();
+    auto zAxis = chart2->axes(Qt::Horizontal);
+    auto xyAxis = chart2->axes(Qt::Vertical);
+    zAxis[0]->setRange(0, 250);
+    xyAxis[0]->setRange(-250, 250);
+    chart2->legend()->hide();
+
+    ui->graphicsView_1->setChart(chart1);
+    ui->graphicsView_2->setChart(chart2);
 	ui->start->setDisabled(false);
-	ui->stop->setDisabled(true);
-	ui->L->valueChanged(ui->L->value());
+    ui->stop->setDisabled(true);
+
+    ui->X->valueChanged(1);//обновит начальное положение ядра
 }
 
 void form::updateGraph() {
-	totalTime = doubleStarSatelite->Step(timerInterval);
-	series->append(doubleStarSatelite->get_x(), doubleStarSatelite->get_y());
-	ui->graphicsView->update();
+    totalTime = wind->Step(timerInterval);
+
+    seriesYX->append(wind->get_x(), wind->get_y());    
+    coreXY->clear();
+    coreXY->append(wind->get_x(),wind->get_y());
+    ui->graphicsView_1->update();
+
+    seriesZXY->append(wind->get_z(), wind->get_path());
+    coreZXY->clear();
+    coreZXY->append(wind->get_z(), wind->get_path());
+    ui->graphicsView_2->update();
 	updateStatus();
 }
 void form::updateStatus() {
-	ui->status->setText("Время со старта : " + QString::number(totalTime) + " Координаты: " + QString::number(doubleStarSatelite->get_x(), 'd', 0) + " км, " + QString::number(doubleStarSatelite->get_y(), 'd', 0) + " км Скорость: " + QString::number(doubleStarSatelite->get_V(), 'd', 2) + " км/с");
+    ui->status->setText("Время со старта : " + QString::number(totalTime) + " Координаты: " + QString::number(wind->get_x(), 'd', 0) + ", " + QString::number(wind->get_y(), 'd', 0) +", " + QString::number(wind->get_z(), 'd', 0) /*+ " Скорость: " + QString::number(doubleStarSatelite->get_V(), 'd', 2) + " км/с"*/);
 }
 
 form::~form()
 {
 	delete ui;
 	delete timer;
-	delete chart;
-	delete series;
+    delete chart1;
+    delete chart2;
+    delete seriesYX;
+    delete seriesZXY;
+    delete coreXY;
+    delete coreZXY;
 }
 
 void form::on_start_clicked()
 {
 	if (!ui->stop->isEnabled()) {
-		doubleStarSatelite = new DoubleStarSatelite(ui->M1->value(), ui->M2->value(), ui->m->value(), ui->L->value(), ui->R->value()*cos(ui->fi->value()), ui->R->value()*sin(ui->fi->value()), ui->V->value()*cos(ui->teta->value()), ui->V->value()*sin(ui->teta->value()));
+        wind = new Wind(ui->M->value(),ui->S->value(),ui->X->value(),ui->Y->value(),ui->Z->value(),ui->xV->value(),ui->yV->value(),ui->zV->value(),ui->p->value(),ui->xVv->value(),ui->yVv->value());
 	}
 	setDisabledSplinBoxes(true);
 	timer->start(); // Запускаем таймер
@@ -77,53 +103,66 @@ void form::on_stop_clicked()
 		ui->stop->setDisabled(true);
 		ui->stop->setText("Пауза");
 		setDisabledSplinBoxes(false);
-		series->clear();
-		ui->graphicsView->update();
+        seriesYX->clear();
+        seriesZXY->clear();
+        ui->X->valueChanged(1);//обновит начальное положение ядра
 		ui->status->setText("Остановлено");
 	}
 }
 
-void form::on_L_valueChanged(double L) //обновление графиков планет в зависимости от масс и растояния
+void form::setDisabledSplinBoxes(bool value) {
+    ui->S->setDisabled(value);
+    ui->M->setDisabled(value);
+    ui->xV->setDisabled(value);
+    ui->yV->setDisabled(value);
+    ui->zV->setDisabled(value);
+    ui->X->setDisabled(value);
+    ui->Y->setDisabled(value);
+    ui->Z->setDisabled(value);
+    ui->p->setDisabled(value);
+    ui->xVv->setDisabled(value);
+    ui->yVv->setDisabled(value);
+}
+void form::on_X_valueChanged(double arg1)
 {
-	planet1->clear();
-	planet2->clear();
-	double x1 = -L * ui->M2->value() / (ui->M1->value() + ui->M2->value());
-	double x2 = x1 + L;
-	planet1->append(x1, 0);
-	planet2->append(x2, 0);
-	ui->graphicsView->update();
-	//ui->status->setText(QString::number(x1)+" "+QString::number(x2));
+    coreXY->clear();
+    coreXY->append(ui->X->value(),ui->Y->value());
+    coreZXY->clear();
+    coreZXY->append(ui->Z->value(),sqrt(pow(ui->Y->value(),2)+pow(ui->X->value(),2)));
+    ui->graphicsView_1->update();
+    ui->graphicsView_2->update();
 }
 
-void form::setDisabledSplinBoxes(bool value) {
-	ui->L->setDisabled(value);
-	ui->R->setDisabled(value);
-	ui->V->setDisabled(value);
-	ui->m->setDisabled(value);
-	ui->M1->setDisabled(value);
-	ui->M2->setDisabled(value);
-	ui->fi->setDisabled(value);
-	ui->teta->setDisabled(value);
+void form::on_Y_valueChanged(double arg1)
+{
+    ui->X->valueChanged(1);
+}
+
+void form::on_Z_valueChanged(double arg1)
+{
+    ui->X->valueChanged(1);
 }
 
 void form::on_x_axis_editingFinished()
 {
-	auto xAxis = chart->axes(Qt::Horizontal);
-	xAxis[0]->setRange(-ui->x_axis->value(), ui->x_axis->value());
+    auto xAxis = chart1->axes(Qt::Horizontal);
+    xAxis[0]->setRange(-ui->x_axis->value(), ui->x_axis->value());
 }
 
 void form::on_y_axis_editingFinished()
 {
-	auto yAxis = chart->axes(Qt::Vertical);
-	yAxis[0]->setRange(-ui->y_axis->value(), ui->y_axis->value());
+    auto yAxis = chart1->axes(Qt::Vertical);
+    yAxis[0]->setRange(-ui->y_axis->value(), ui->y_axis->value());
 }
 
-void form::on_M1_editingFinished()
+void form::on_z_axis_editingFinished()
 {
-    ui->L->valueChanged(ui->L->value());
+    auto zAxis = chart2->axes(Qt::Horizontal);
+    zAxis[0]->setRange(0, ui->z_axis->value());
 }
 
-void form::on_M2_editingFinished()
+void form::on_xy_axis_editingFinished()
 {
-    ui->L->valueChanged(ui->L->value());
+    auto xyAxis = chart2->axes(Qt::Vertical);
+    xyAxis[0]->setRange(-ui->xy_axis->value(), ui->xy_axis->value());
 }
