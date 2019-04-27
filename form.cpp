@@ -27,8 +27,8 @@ form::form(QWidget *parent) :
     chart1->createDefaultAxes();
     auto xAxis = chart1->axes(Qt::Horizontal);
     auto yAxis = chart1->axes(Qt::Vertical);
-    xAxis[0]->setRange(-250, 250);
-    yAxis[0]->setRange(-250, 250);
+    xAxis[0]->setRange(-25, 25);
+    yAxis[0]->setRange(-25, 25);
     chart1->legend()->hide();
 
     chart2 = new QChart();
@@ -37,8 +37,8 @@ form::form(QWidget *parent) :
     chart2->createDefaultAxes();
     auto zAxis = chart2->axes(Qt::Vertical);
     auto xyAxis = chart2->axes(Qt::Horizontal);
-    zAxis[0]->setRange(0, 250);
-    xyAxis[0]->setRange(-250, 250);
+    zAxis[0]->setRange(0, 25);
+    xyAxis[0]->setRange(0, 25);
     chart2->legend()->hide();
 
     ui->graphicsView_1->setChart(chart1);
@@ -181,5 +181,5 @@ void form::on_z_axis_editingFinished()
 void form::on_xy_axis_editingFinished()
 {
     auto xyAxis = chart2->axes(Qt::Horizontal);
-    xyAxis[0]->setRange(-ui->xy_axis->value(), ui->xy_axis->value());
+    xyAxis[0]->setRange(0, ui->xy_axis->value());
 }
