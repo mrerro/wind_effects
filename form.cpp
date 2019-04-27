@@ -52,21 +52,32 @@ form::form(QWidget *parent) :
 void form::updateGraph() {
     totalTime = wind->Step(timerInterval);
 
-    seriesYX->append(wind->get_x(), wind->get_y());    
-    coreXY->clear();
-    coreXY->append(wind->get_x(),wind->get_y());
-    ui->graphicsView_1->update();
+    if(wind->get_z()>=0){
+        seriesYX->append(wind->get_x(), wind->get_y());
+        coreXY->clear();
+        coreXY->append(wind->get_x(),wind->get_y());
+        ui->graphicsView_1->update();
 
-    seriesZXY->append(wind->get_z(), wind->get_path());
-    coreZXY->clear();
-    coreZXY->append(wind->get_z(), wind->get_path());
-    ui->graphicsView_2->update();
-	updateStatus();
         seriesZXY->append(wind->get_path(),wind->get_z());
         coreZXY->clear();
         coreZXY->append(wind->get_path(),wind->get_z());
         ui->graphicsView_2->update();
         updateStatus();
+    }
+    else{
+        seriesYX->append(wind->get_x(), wind->get_y());
+        coreXY->clear();
+        coreXY->append(wind->get_x(),wind->get_y());
+        ui->graphicsView_1->update();
+
+        seriesZXY->append(wind->get_path(),wind->get_z());
+        coreZXY->clear();
+        coreZXY->append(wind->get_path(),wind->get_z());
+        ui->graphicsView_2->update();
+        updateStatus();
+        ui->stop->click();
+        ui->start->setDisabled(true);
+    }
 }
 void form::updateStatus() {
     ui->status->setText("Время со старта : " + QString::number(totalTime) + " Координаты: " + QString::number(wind->get_x(), 'd', 0) + ", " + QString::number(wind->get_y(), 'd', 0) +", " + QString::number(wind->get_z(), 'd', 0) /*+ " Скорость: " + QString::number(doubleStarSatelite->get_V(), 'd', 2) + " км/с"*/);
