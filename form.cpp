@@ -162,12 +162,12 @@ void form::on_y_axis_editingFinished()
 
 void form::on_z_axis_editingFinished()
 {
-    auto zAxis = chart2->axes(Qt::Horizontal);
+    auto zAxis = chart2->axes(Qt::Vertical);
     zAxis[0]->setRange(0, ui->z_axis->value());
 }
 
 void form::on_xy_axis_editingFinished()
 {
-    auto xyAxis = chart2->axes(Qt::Vertical);
+    auto xyAxis = chart2->axes(Qt::Horizontal);
     xyAxis[0]->setRange(-ui->xy_axis->value(), ui->xy_axis->value());
 }
