@@ -70,9 +70,9 @@ void form::updateGraph() {
         coreXY->append(wind->get_x(),wind->get_y());
         ui->graphicsView_1->update();
 
-        seriesZXY->append(wind->get_path(),wind->get_z());
+        seriesZXY->append(wind->get_path(),0);
         coreZXY->clear();
-        coreZXY->append(wind->get_path(),wind->get_z());
+        coreZXY->append(wind->get_path(),0);
         ui->graphicsView_2->update();
         updateStatus();
         ui->stop->click();
@@ -117,6 +117,7 @@ void form::on_stop_clicked()
 	else {
 		totalTime = 0;
 		ui->stop->setDisabled(true);
+        ui->start->setDisabled(false);
 		ui->stop->setText("Пауза");
 		setDisabledSplinBoxes(false);
         seriesYX->clear();
