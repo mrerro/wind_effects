@@ -643,6 +643,32 @@
        </spacer>
       </item>
       <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>XY</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="xy_axis">
+        <property name="minimumSize">
+         <size>
+          <width>60</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="maximum">
+         <number>10000</number>
+        </property>
+        <property name="value">
+         <number>250</number>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Z</string>
@@ -672,32 +698,6 @@
         <property name="baseSize">
          <size>
           <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="minimum">
-         <number>10</number>
-        </property>
-        <property name="maximum">
-         <number>10000</number>
-        </property>
-        <property name="value">
-         <number>250</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>XY</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="xy_axis">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
           <height>0</height>
          </size>
         </property>

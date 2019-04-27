@@ -35,8 +35,8 @@ form::form(QWidget *parent) :
     chart2->addSeries(seriesZXY);
     chart2->addSeries(coreZXY);
     chart2->createDefaultAxes();
-    auto zAxis = chart2->axes(Qt::Horizontal);
-    auto xyAxis = chart2->axes(Qt::Vertical);
+    auto zAxis = chart2->axes(Qt::Vertical);
+    auto xyAxis = chart2->axes(Qt::Horizontal);
     zAxis[0]->setRange(0, 250);
     xyAxis[0]->setRange(-250, 250);
     chart2->legend()->hide();
@@ -62,6 +62,11 @@ void form::updateGraph() {
     coreZXY->append(wind->get_z(), wind->get_path());
     ui->graphicsView_2->update();
 	updateStatus();
+        seriesZXY->append(wind->get_path(),wind->get_z());
+        coreZXY->clear();
+        coreZXY->append(wind->get_path(),wind->get_z());
+        ui->graphicsView_2->update();
+        updateStatus();
 }
 void form::updateStatus() {
     ui->status->setText("Время со старта : " + QString::number(totalTime) + " Координаты: " + QString::number(wind->get_x(), 'd', 0) + ", " + QString::number(wind->get_y(), 'd', 0) +", " + QString::number(wind->get_z(), 'd', 0) /*+ " Скорость: " + QString::number(doubleStarSatelite->get_V(), 'd', 2) + " км/с"*/);
@@ -128,7 +133,7 @@ void form::on_X_valueChanged(double arg1)
     coreXY->clear();
     coreXY->append(ui->X->value(),ui->Y->value());
     coreZXY->clear();
-    coreZXY->append(ui->Z->value(),sqrt(pow(ui->Y->value(),2)+pow(ui->X->value(),2)));
+    coreZXY->append(sqrt(pow(ui->Y->value(),2)+pow(ui->X->value(),2)),ui->Z->value());
     ui->graphicsView_1->update();
     ui->graphicsView_2->update();
 }
