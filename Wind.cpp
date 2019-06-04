@@ -38,9 +38,9 @@ std::vector<double> Wind::F(double time, std::vector<double> &coordinates) {
     FY[0] = Y[3];
     FY[1] = Y[4];
     FY[2] = Y[5];
-    FY[3] = - 0.5*C*p*S*std::pow(Vx-wx,2);
-    FY[4] = - 0.5*C*p*S*std::pow(Vy-wy,2);
-    FY[5] = - M*g - 0.5*C*p*S*Vz*Vz;
+    FY[3] = (- 0.5*C*p*S*(Vx-wx)*std::abs(Vx-wx))/M;
+    FY[4] = (- 0.5*C*p*S*(Vy-wy)*std::abs(Vy-wy))/M;
+    FY[5] = (- M*g - 0.5*C*p*S*Vz*std::abs(Vz))/M;
     return FY;
 }
 
