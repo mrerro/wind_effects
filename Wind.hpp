@@ -31,7 +31,20 @@ public:
     double get_x() { return Y[0]; }
     double get_y() { return Y[1]; }
     double get_z() { return Y[2]; }
-    double get_path() { return std::sqrt(std::pow(Y[0], 2) + std::pow(Y[1],2)); }
+    double get_path() {
+        double out = std::sqrt(std::pow(Y[0], 2) + std::pow(Y[1],2));
+        if (Y[0] > 0){
+            return out;
+        }else if (Y[0] < 0) {
+            return  -out;
+        }else {
+            if(Y[1] >= 0){
+                return out;
+            }else {
+                return -out;
+            }
+        }
+    }
     double get_Vx() { return Y[3]; }
     double get_Vy() { return Y[4]; }
     double get_Vz() { return Y[5]; }
