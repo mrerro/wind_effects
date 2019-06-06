@@ -6,6 +6,7 @@
 #include <QtCharts>
 #include <QTimer>
 #include <QWidget>
+#include <QFile>
 
 namespace Ui {
 	class form;
@@ -33,6 +34,7 @@ private:
 	double timerInterval;
 	void updateStatus();
 	void setDisabledSplinBoxes(bool);
+    QFile *fileOut = new QFile("data.csv");
 
 private slots:
 	void updateGraph();
@@ -40,9 +42,6 @@ private slots:
     void on_stop_clicked();
 	void on_x_axis_editingFinished();
     void on_y_axis_editingFinished();
-    void on_X_valueChanged(double arg1);
-    void on_Y_valueChanged(double arg1);
-    void on_Z_valueChanged(double arg1);
     void on_z_axis_editingFinished();
     void on_xy_axis_editingFinished();
 };

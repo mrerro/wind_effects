@@ -45,12 +45,13 @@ form::form(QWidget *parent) :
     ui->graphicsView_2->setChart(chart2);
 	ui->start->setDisabled(false);
     ui->stop->setDisabled(true);
-
-    ui->X->valueChanged(1);//обновит начальное положение ядра
 }
 
 void form::updateGraph() {
     totalTime = wind->Step(timerInterval);
+
+    QTextStream writeStreqam(fileOut);
+    writeStreqam << wind->get_x() <<";"<<wind->get_y()<<";"<<wind->get_z()<<"\n";
 
     if(wind->get_z()>=0){
         seriesYX->append(wind->get_x(), wind->get_y());
@@ -97,8 +98,9 @@ form::~form()
 
 void form::on_start_clicked()
 {
-	if (!ui->stop->isEnabled()) {
-        wind = new Wind(ui->M->value(),ui->S->value(),ui->X->value(),ui->Y->value(),ui->Z->value(),ui->xV->value(),ui->yV->value(),ui->zV->value(),ui->p->value(),ui->xVv->value(),ui->yVv->value());
+    if (!ui->stop->isEnabled()) {
+        wind = new Wind(ui->M->value(),ui->S->value(),0,0,0,ui->V->value(),ui->alpha->value(),ui->beta->value(),ui->p->value(),ui->xVv->value(),ui->yVv->value());
+        fileOut->open(QIODevice::WriteOnly | QIODevice::Text);
 	}
 	setDisabledSplinBoxes(true);
 	timer->start(); // Запускаем таймер
@@ -122,7 +124,7 @@ void form::on_stop_clicked()
 		setDisabledSplinBoxes(false);
         seriesYX->clear();
         seriesZXY->clear();
-        ui->X->valueChanged(1);//обновит начальное положение ядра
+        fileOut->close();
 		ui->status->setText("Остановлено");
 	}
 }
@@ -130,34 +132,12 @@ void form::on_stop_clicked()
 void form::setDisabledSplinBoxes(bool value) {
     ui->S->setDisabled(value);
     ui->M->setDisabled(value);
-    ui->xV->setDisabled(value);
-    ui->yV->setDisabled(value);
-    ui->zV->setDisabled(value);
-    ui->X->setDisabled(value);
-    ui->Y->setDisabled(value);
-    ui->Z->setDisabled(value);
+    ui->V->setDisabled(value);
+    ui->alpha->setDisabled(value);
+    ui->beta->setDisabled(value);
     ui->p->setDisabled(value);
     ui->xVv->setDisabled(value);
     ui->yVv->setDisabled(value);
-}
-void form::on_X_valueChanged(double arg1)
-{
-    coreXY->clear();
-    coreXY->append(ui->X->value(),ui->Y->value());
-    coreZXY->clear();
-    coreZXY->append(sqrt(pow(ui->Y->value(),2)+pow(ui->X->value(),2)),ui->Z->value());
-    ui->graphicsView_1->update();
-    ui->graphicsView_2->update();
-}
-
-void form::on_Y_valueChanged(double arg1)
-{
-    ui->X->valueChanged(1);
-}
-
-void form::on_Z_valueChanged(double arg1)
-{
-    ui->X->valueChanged(1);
 }
 
 void form::on_x_axis_editingFinished()

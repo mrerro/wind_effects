@@ -2,7 +2,7 @@
 
 Wind::Wind(double M, double S, 
            double x0, double y0, double z0,
-           double Vx0, double Vy0, double Vz0,
+           double V0, double alpha, double beta,
            double p, double wx, double wy) : RungeKutta (6)
 {
     this->M = M;
@@ -17,9 +17,9 @@ Wind::Wind(double M, double S,
     Y0[0] = x0;
     Y0[1] = y0;
     Y0[2] = z0;
-    Y0[3] = Vx0;
-    Y0[4] = Vy0;
-    Y0[5] = Vz0;
+    Y0[3] = fabs(V0)*cos(alpha*(M_PI/180))*sin(beta*(M_PI/180));
+    Y0[4] = fabs(V0)*cos(alpha*(M_PI/180))*cos(beta*(M_PI/180));
+    Y0[5] = fabs(V0)*sin(alpha*(M_PI/180));
     SetInit(0, Y0);
 }
 
